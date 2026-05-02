@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tap In — The city is full of people you almost met.</title>
+<meta name="description" content="Tap Band turns missed connections into real ones. Reserve yours. NYC launch 2026."/>
+<meta property="og:title" content="Tap In — The city is full of people you almost met."/>
+<meta property="og:description" content="The social layer for physical reality. Now reserving."/>
+<meta property="og:image" content="https://tapin.vip/og.jpg"/>
+<meta property="og:url" content="https://tapin.vip"/>
+<meta name="twitter:card" content="summary_large_image"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+<style>
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESET + TOKENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #08080F;
+  --bg2:      #11111C;
+  --bg3:      #16161F;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.12);
+  --coral:    #E8475F;
+  --coral-dim: rgba(232,71,95,0.18);
+  --amber:    #C9A87C;
+  --text:     #F2F0EC;
+  --text-2:   rgba(242,240,236,0.5);
+  --text-3:   rgba(242,240,236,0.25);
+  --serif:    'Instrument Serif', Georgia, serif;
+  --mono:     'JetBrains Mono', 'Courier New', monospace;
+}
+
+html { scroll-behavior: smooth; background: var(--bg); }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ATMOSPHERE LAYERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* Film grain */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 1000;
+  pointer-events: none;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+/* Scanlines */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 999;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.18) 2px,
+    rgba(0,0,0,0.18) 4px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* Vignette */
+.vignette {
+  position: fixed; inset: 0; z-index: 998; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   NAV
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 40px;
+  background: linear-gradient(180deg, rgba(8,8,15,0.9) 0%, transparent 100%);
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 13px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text);
+}
+.rec-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 8px var(--coral);
+  animation: rec-blink 2s ease-in-out infinite;
+}
+@keyframes rec-blink { 0%,100%{opacity:1;box-shadow:0 0 8px var(--coral)} 50%{opacity:0.3;box-shadow:none} }
+.nav-reserve {
+  font-family: var(--mono); font-size: 11px; font-weight: 400;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-2);
+  border: 1px solid var(--border2);
+  padding: 8px 18px; border-radius: 2px;
+  background: transparent; cursor: pointer;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+.nav-reserve:hover { color: var(--coral); border-color: var(--coral); background: var(--coral-dim); }
+
+@media(max-width:640px){ nav { padding: 20px 20px; } }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   HERO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 140px 40px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg-glow {
+  position: absolute; top: -20%; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse, rgba(232,71,95,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-coords {
+  position: absolute;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.08em;
+  line-height: 1.8;
+}
+.hero-coords.tl { top: 140px; left: 40px; }
+.hero-coords.tr { top: 140px; right: 40px; text-align: right; }
+.hero-coords.bl { bottom: 60px; left: 40px; }
+.hero-coords.br { bottom: 60px; right: 40px; text-align: right; }
+@media(max-width:768px){
+  .hero-coords.tr, .hero-coords.bl, .hero-coords.br { display: none; }
+  .hero-coords.tl { top: 90px; left: 20px; }
+}
+
+.hero-inner { text-align: center; max-width: 900px; position: relative; }
+
+.hero-eyebrow {
+  font-family: var(--mono); font-size: 10px; font-weight: 400;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--coral); margin-bottom: 36px;
+  opacity: 0; animation: line-in 0.6s ease 0.2s forwards;
+}
+.hero-h1 {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(44px, 7.5vw, 96px);
+  line-height: 1.05; letter-spacing: -0.02em;
+  color: var(--text); margin-bottom: 32px;
+}
+.hero-h1 .line {
+  display: block;
+  opacity: 0; transform: translateY(20px);
+}
+.hero-h1 .line:nth-child(1) { animation: line-in 0.7s ease 0.4s forwards; }
+.hero-h1 .line:nth-child(2) { animation: line-in 0.7s ease 0.65s forwards; }
+.hero-h1 .line:nth-child(3) { animation: line-in 0.7s ease 0.9s forwards; }
+
+.hero-sub {
+  font-family: var(--mono); font-size: 13px; font-weight: 300;
+  color: var(--text-2); letter-spacing: 0.04em; line-height: 1.8;
+  max-width: 420px; margin: 0 auto 52px;
+  opacity: 0; animation: line-in 0.7s ease 1.1s forwards;
+}
+.hero-actions {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  opacity: 0; animation: line-in 0.7s ease 1.3s forwards;
+}
+.btn-reserve {
+  font-family: var(--mono); font-size: 12px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  background: var(--coral); color: #fff; border: none;
+  padding: 14px 32px; cursor: pointer; text-decoration: none;
+  border-radius: 2px;
+  box-shadow: 0 0 24px rgba(232,71,95,0.3);
+  transition: box-shadow 0.2s, transform 0.15s;
+}
+.btn-reserve:hover { box-shadow: 0 0 40px rgba(232,71,95,0.5); transform: translateY(-1px); }
+.btn-ghost {
+  font-family: var(--mono); font-size: 12px; font-weight: 400;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  background: transparent; color: var(--text-2);
+  border: 1px solid var(--border2);
+  padding: 14px 28px; cursor: pointer; text-decoration: none;
+  border-radius: 2px; transition: color 0.2s, border-color 0.2s;
+}
+.btn-ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+
+@keyframes line-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SECTION SHARED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.section { padding: 120px 40px; }
+.section-inner { max-width: 960px; margin: 0 auto; }
+.section-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 400;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 48px;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-label::before {
+  content: ''; display: block;
+  width: 24px; height: 1px; background: var(--border2);
+}
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+
+@media(max-width:640px){ .section { padding: 80px 20px; } }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TRANSMISSIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.transmissions-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+.transmissions-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 56px; flex-wrap: wrap; gap: 16px;
+}
+.transmissions-title {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(28px, 4vw, 44px);
+  color: var(--text); line-height: 1.1;
+}
+.transmissions-meta {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.12em;
+  text-align: right; line-height: 2;
+}
+.feed { display: flex; flex-direction: column; gap: 0; }
+.feed-item {
+  display: grid; grid-template-columns: 100px 1fr auto;
+  align-items: baseline;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+  transition: background 0.2s;
+  gap: 24px;
+}
+.feed-item:last-child { border-bottom: none; }
+.feed-item:hover { background: rgba(232,71,95,0.04); }
+.feed-item:hover .feed-story { color: var(--text); }
+.feed-time {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--coral); letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.feed-story {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(16px, 2.2vw, 22px);
+  color: var(--text-2); line-height: 1.4;
+  transition: color 0.2s;
+}
+.feed-tag {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.1em;
+  text-transform: uppercase; white-space: nowrap;
+  text-align: right;
+}
+@media(max-width:640px){
+  .feed-item { grid-template-columns: 1fr; gap: 6px; padding: 20px 0; }
+  .feed-tag { display: none; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   THE ARTIFACT (Tap Band)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.artifact-section { background: var(--bg); }
+.artifact-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+.artifact-stage {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  aspect-ratio: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+}
+/* Viewfinder brackets */
+.artifact-stage::before,
+.artifact-stage::after {
+  content: '';
+  position: absolute;
+  width: 24px; height: 24px;
+  pointer-events: none;
+}
+.artifact-stage::before {
+  top: 16px; left: 16px;
+  border-top: 1px solid var(--coral);
+  border-left: 1px solid var(--coral);
+}
+.artifact-stage::after {
+  bottom: 16px; right: 16px;
+  border-bottom: 1px solid var(--coral);
+  border-right: 1px solid var(--coral);
+}
+.vf-tr, .vf-bl {
+  position: absolute;
+  width: 24px; height: 24px; pointer-events: none;
+}
+.vf-tr { top: 16px; right: 16px; border-top: 1px solid var(--coral); border-right: 1px solid var(--coral); }
+.vf-bl { bottom: 16px; left: 16px; border-bottom: 1px solid var(--coral); border-left: 1px solid var(--coral); }
+
+/* Band SVG render */
+.band-wrap {
+  position: relative;
+  animation: band-float 4s ease-in-out infinite;
+}
+@keyframes band-float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+.tap-band-svg { width: 180px; filter: drop-shadow(0 0 30px rgba(232,71,95,0.2)); }
+
+.exif-label {
+  position: absolute;
+  font-family: var(--mono); font-size: 9px; color: var(--text-3); letter-spacing: 0.1em;
+}
+.exif-tl { top: 40px; left: 20px; }
+.exif-br { bottom: 40px; right: 20px; text-align: right; }
+
+.artifact-info { }
+.artifact-name {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(32px, 4vw, 52px);
+  color: var(--text); margin-bottom: 16px; line-height: 1.1;
+}
+.artifact-tagline {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text-2); letter-spacing: 0.06em;
+  margin-bottom: 48px; line-height: 1.8;
+}
+.specs-table { width: 100%; border-collapse: collapse; }
+.specs-table tr { border-bottom: 1px solid var(--border); }
+.specs-table tr:last-child { border-bottom: none; }
+.specs-table td {
+  padding: 12px 0;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.04em;
+}
+.specs-table td:first-child { color: var(--text-3); width: 40%; }
+.specs-table td:last-child { color: var(--text-2); }
+.spec-coral { color: var(--coral) !important; }
+
+@media(max-width:768px){
+  .artifact-grid { grid-template-columns: 1fr; gap: 48px; }
+  .artifact-stage { aspect-ratio: 4/3; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   METHOD
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.method-section {
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+}
+.method-steps { display: flex; flex-direction: column; gap: 0; }
+.method-step {
+  display: grid;
+  grid-template-columns: 80px 1fr 1fr;
+  align-items: start;
+  padding: 56px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 48px;
+}
+.method-step:last-child { border-bottom: none; }
+.method-numeral {
+  font-family: var(--serif); font-style: italic;
+  font-size: 48px; color: var(--text-3); line-height: 1;
+}
+.method-verb {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(28px, 3.5vw, 42px);
+  color: var(--text); line-height: 1.1;
+}
+.method-desc {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text-2); letter-spacing: 0.03em; line-height: 1.9;
+  padding-top: 8px;
+}
+@media(max-width:640px){
+  .method-step { grid-template-columns: 48px 1fr; gap: 20px; }
+  .method-desc { grid-column: 2; }
+  .method-numeral { font-size: 32px; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   MANIFESTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.manifesto-section {
+  min-height: 60vh;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.manifesto-glow {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(232,71,95,0.04) 0%, transparent 70%);
+}
+.manifesto-inner { max-width: 780px; padding: 80px 40px; }
+.manifesto-mark {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--coral); margin-bottom: 40px;
+}
+.manifesto-quote {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(22px, 3.5vw, 40px);
+  color: var(--text); line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.manifesto-quote em { color: var(--amber); font-style: italic; }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   RESERVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.reserve-section {
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+}
+.reserve-inner { max-width: 600px; }
+.reserve-tag {
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--coral); margin-bottom: 8px;
+}
+.reserve-count {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--text-3); margin-bottom: 32px; letter-spacing: 0.06em;
+}
+.reserve-heading {
+  font-family: var(--serif); font-style: italic;
+  font-size: clamp(32px, 5vw, 56px);
+  color: var(--text); line-height: 1.1; margin-bottom: 16px;
+}
+.reserve-sub {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text-2); letter-spacing: 0.04em; line-height: 1.9;
+  margin-bottom: 40px;
+}
+
+/* Progress bar */
+.progress-wrap { margin-bottom: 40px; }
+.progress-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.08em; margin-bottom: 10px;
+}
+.progress-bar-bg {
+  height: 2px; background: var(--border2); width: 100%;
+  position: relative;
+}
+.progress-bar-fill {
+  position: absolute; top: 0; left: 0;
+  height: 100%; background: var(--coral);
+  box-shadow: 0 0 8px var(--coral);
+  width: 31.2%;
+  transition: width 1.5s ease;
+}
+
+/* Form */
+.reserve-form { display: flex; gap: 0; max-width: 480px; }
+.reserve-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2); border-right: none;
+  color: var(--text); padding: 14px 18px;
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+  outline: none; border-radius: 2px 0 0 2px;
+  transition: border-color 0.2s;
+}
+.reserve-input::placeholder { color: var(--text-3); }
+.reserve-input:focus { border-color: var(--coral); }
+.reserve-submit {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  background: var(--coral); color: #fff; border: none;
+  padding: 14px 24px; cursor: pointer;
+  border-radius: 0 2px 2px 0;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+}
+.reserve-submit:hover { opacity: 0.85; }
+.reserve-note {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.06em;
+  margin-top: 14px; line-height: 1.8;
+}
+.reserve-note span { color: var(--amber); }
+
+/* Price tag */
+.price-tag {
+  display: inline-flex; align-items: baseline; gap: 8px;
+  margin-bottom: 32px;
+}
+.price-amount {
+  font-family: var(--serif); font-style: italic;
+  font-size: 48px; color: var(--text); line-height: 1;
+}
+.price-label {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase;
+  line-height: 1.4;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   FOOTER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+footer {
+  padding: 48px 40px;
+  border-top: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  align-items: end; gap: 24px;
+}
+.footer-brand {
+  font-family: var(--serif); font-style: italic;
+  font-size: 22px; color: var(--text);
+}
+.footer-center {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.1em;
+  text-align: center; line-height: 2;
+}
+.footer-right {
+  font-family: var(--mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.08em;
+  text-align: right; line-height: 2;
+}
+.footer-right a { color: var(--text-3); text-decoration: none; transition: color 0.15s; }
+.footer-right a:hover { color: var(--text-2); }
+@media(max-width:640px){
+  footer { grid-template-columns: 1fr; text-align: left; }
+  .footer-center, .footer-right { text-align: left; }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   DIVIDER LINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.h-rule {
+  width: 100%; height: 1px;
+  background: var(--border);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   REDUCED MOTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+@media(prefers-reduced-motion:reduce){
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .hero-h1 .line, .hero-eyebrow, .hero-sub, .hero-actions { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="vignette"></div>
+
+<!-- ═══════════════════════ NAV ═══════════════════════ -->
+<nav>
+  <div class="nav-brand">
+    <span class="rec-dot"></span>
+    Tap In
+  </div>
+  <a href="#reserve" class="nav-reserve">Reserve Band</a>
+</nav>
+
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
+<section class="hero">
+  <div class="hero-bg-glow"></div>
+
+  <div class="hero-coords tl">
+    40°42'46"N 74°00'22"W<br/>
+    NEW YORK CITY<br/>
+    EST. 2026
+  </div>
+  <div class="hero-coords tr">
+    FILE_001<br/>
+    LAUNCH / PRE-SEED<br/>
+    STATUS: ACTIVE
+  </div>
+  <div class="hero-coords bl">
+    TAP BAND™<br/>
+    GEN 1
+  </div>
+  <div class="hero-coords br">
+    312 / 1,000<br/>
+    RESERVED
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow">New York City · 2026 · Social Infrastructure</div>
+    <h1 class="hero-h1">
+      <span class="line">The city is full of</span>
+      <span class="line">people you</span>
+      <span class="line"><em style="color:var(--amber)">almost</em> met.</span>
+    </h1>
+    <p class="hero-sub">
+      Tap Band resolves the missed connections that happen every night in every bar, club, and corner of the city you're already in.
+    </p>
+    <div class="hero-actions">
+      <a href="#reserve" class="btn-reserve">Reserve Your Band</a>
+      <a href="#how" class="btn-ghost">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ TRANSMISSIONS ═══════════════════════ -->
+<section class="section transmissions-section">
+  <div class="section-inner">
+    <div class="transmissions-header reveal">
+      <h2 class="transmissions-title">Transmissions<br/>from the city</h2>
+      <div class="transmissions-meta">
+        LIVE FEED<br/>
+        NYC — ONGOING<br/>
+        <span style="color:var(--coral)">● REC</span>
+      </div>
+    </div>
+
+    <div class="feed">
+      <div class="feed-item reveal reveal-delay-1">
+        <div class="feed-time">11:47 PM</div>
+        <div class="feed-story">She was reading Ferrante on the L train. You were one stop away.</div>
+        <div class="feed-tag">Williamsburg<br/>L Train</div>
+      </div>
+      <div class="feed-item reveal reveal-delay-2">
+        <div class="feed-time">1:23 AM</div>
+        <div class="feed-story">You laughed at the same song. He left before last call.</div>
+        <div class="feed-tag">Lower East Side<br/>Baby's All Right</div>
+      </div>
+      <div class="feed-item reveal reveal-delay-3">
+        <div class="feed-time">12:08 AM</div>
+        <div class="feed-story">She asked what you were drinking. You forgot to ask her name.</div>
+        <div class="feed-tag">Bushwick<br/>Elsewhere</div>
+      </div>
+      <div class="feed-item reveal reveal-delay-4">
+        <div class="feed-time">2:14 AM</div>
+        <div class="feed-story">Eye contact for three songs. Gone before the set ended.</div>
+        <div class="feed-tag">Greenpoint<br/>TV Eye</div>
+      </div>
+      <div class="feed-item reveal reveal-delay-5">
+        <div class="feed-time">9:43 PM</div>
+        <div class="feed-story">You held the door. She said thank you. That was the whole thing.</div>
+        <div class="feed-tag">Nolita<br/>Roman's</div>
+      </div>
+      <div class="feed-item reveal">
+        <div class="feed-time">11:15 PM</div>
+        <div class="feed-story">Same corner every Friday. Never once said hello.</div>
+        <div class="feed-tag">West Village<br/>Julius'</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ THE ARTIFACT ═══════════════════════ -->
+<section class="section artifact-section">
+  <div class="section-inner">
+    <div class="section-label reveal">The Artifact</div>
+    <div class="artifact-grid">
+
+      <!-- Band stage -->
+      <div class="artifact-stage reveal">
+        <div class="vf-tr"></div>
+        <div class="vf-bl"></div>
+        <div class="exif-label exif-tl">
+          ISO 400 · f/1.8<br/>
+          TAP BAND GEN 1<br/>
+          NYC 2026
+        </div>
+        <div class="exif-label exif-br">
+          NFC · BLE 5.2<br/>
+          WATERPROOF
+        </div>
+        <div class="band-wrap">
+          <!-- SVG Tap Band render -->
+          <svg class="tap-band-svg" viewBox="0 0 200 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Band body -->
+            <rect x="60" y="20" width="80" height="280" rx="40" fill="#16161F" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+            <!-- Clasp detail top -->
+            <rect x="78" y="16" width="44" height="12" rx="4" fill="#11111C" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <!-- Clasp detail bottom -->
+            <rect x="78" y="292" width="44" height="12" rx="4" fill="#11111C" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <!-- Main face -->
+            <rect x="66" y="100" width="68" height="100" rx="12" fill="#11111C" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+            <!-- NFC symbol -->
+            <path d="M100 130 C 92 138, 92 152, 100 160" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M100 130 C 86 140, 86 150, 100 160" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M100 130 C 108 138, 108 152, 100 160" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M100 130 C 114 140, 114 150, 100 160" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <!-- Center dot -->
+            <circle cx="100" cy="145" r="3" fill="rgba(255,255,255,0.3)"/>
+            <!-- LED indicator -->
+            <circle cx="100" cy="188" r="4" fill="#E8475F">
+              <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="100" cy="188" r="8" fill="rgba(232,71,95,0.15)">
+              <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Subtle texture lines on band -->
+            <line x1="70" y1="60" x2="130" y2="60" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="70" y1="70" x2="130" y2="70" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="70" y1="240" x2="130" y2="240" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <line x1="70" y1="250" x2="130" y2="250" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+            <!-- Tap In wordmark on band -->
+            <text x="100" y="220" text-anchor="middle" fill="rgba(255,255,255,0.12)" font-size="8" font-family="JetBrains Mono, monospace" letter-spacing="3">TAP IN</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Specs -->
+      <div class="artifact-info reveal reveal-delay-2">
+        <div class="artifact-name">Tap Band<br/>Gen 1</div>
+        <p class="artifact-tagline">
+          The wristband that turns the room<br/>into a social layer. Wear it. Tap it.<br/>Connect before you say a word.
+        </p>
+        <table class="specs-table">
+          <tr><td>Connectivity</td><td>NFC · BLE 5.2</td></tr>
+          <tr><td>Water resistance</td><td>IP67</td></tr>
+          <tr><td>Battery</td><td>7-day standby</td></tr>
+          <tr><td>Compatibility</td><td>iOS · Android</td></tr>
+          <tr><td>Materials</td><td>Silicone · Matte aluminum</td></tr>
+          <tr><td>LED</td><td>Match notification pulse</td></tr>
+          <tr><td>Founder price</td><td class="spec-coral">$149 — no charge until ship</td></tr>
+          <tr><td>Status</td><td class="spec-coral">312 of 1,000 reserved</td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ METHOD ═══════════════════════ -->
+<section class="section method-section" id="how">
+  <div class="section-inner">
+    <div class="section-label reveal">Method</div>
+    <div class="method-steps">
+
+      <div class="method-step reveal">
+        <div class="method-numeral">I.</div>
+        <div class="method-verb">Feel.</div>
+        <div class="method-desc">
+          Walk into the room wearing your Tap Band.<br/>
+          Open Tap In. See the grid of everyone who checked in tonight.<br/>
+          Real faces. Real people. Right here, right now.
+        </div>
+      </div>
+
+      <div class="method-step reveal reveal-delay-1">
+        <div class="method-numeral">II.</div>
+        <div class="method-verb">Look.</div>
+        <div class="method-desc">
+          Find someone. Send a Tap — or just an emoji.<br/>
+          They never know unless they Tap back.<br/>
+          No rejection. No exposure. No courage required.
+        </div>
+      </div>
+
+      <div class="method-step reveal reveal-delay-2">
+        <div class="method-numeral">III.</div>
+        <div class="method-verb">Wave.</div>
+        <div class="method-desc">
+          Mutual Tap. Band pulses. You both know.<br/>
+          You unlock chat — or you just walk over.<br/>
+          The city introduced you. The rest is yours.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ MANIFESTO ═══════════════════════ -->
+<section class="section manifesto-section">
+  <div class="manifesto-glow"></div>
+  <div class="manifesto-inner reveal">
+    <div class="manifesto-mark">Tap In / 2026</div>
+    <p class="manifesto-quote">
+      We're not building another dating app.<br/>
+      We're building the <em>social layer</em><br/>
+      for physical reality.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════ RESERVE ═══════════════════════ -->
+<section class="section reserve-section" id="reserve">
+  <div class="section-inner">
+    <div class="reserve-inner reveal">
+      <div class="reserve-tag">● Now Reserving</div>
+      <div class="reserve-count">312 of 1,000 founder spots claimed · NYC launch 2026</div>
+
+      <h2 class="reserve-heading">Friday nights<br/>are about to change.</h2>
+      <p class="reserve-sub">
+        We're launching in NYC first — bars, venues, events.<br/>
+        Founder pricing. No charge until the band ships.<br/>
+        Reserve your spot now.
+      </p>
+
+      <div class="price-tag">
+        <div class="price-amount">$149</div>
+        <div class="price-label">Founder<br/>Price</div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-labels">
+          <span>312 reserved</span>
+          <span>688 remaining</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <form class="reserve-form" onsubmit="handleReserve(event)">
+        <input type="email" class="reserve-input" id="reserve-email" placeholder="your@email.com" required/>
+        <button type="submit" class="reserve-submit">Reserve →</button>
+      </form>
+      <p class="reserve-note" id="reserve-note">
+        No charge until Tap Band ships. <span>Founder pricing locked at $149.</span><br/>
+        Unsubscribe anytime.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+<footer>
+  <div class="footer-brand">Tap In</div>
+  <div class="footer-center">
+    NEW YORK CITY<br/>
+    40°42'46"N 74°00'22"W<br/>
+    © 2026 TAP IN INC.
+  </div>
+  <div class="footer-right">
+    <a href="#">Privacy</a> · <a href="#">Terms</a><br/>
+    <a href="mailto:james@tapin.vip">james@tapin.vip</a><br/>
+    <a href="https://tapin.vip">tapin.vip</a>
+  </div>
+</footer>
+
+<script>
+// ── Scroll reveal
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08, rootMargin: '0px 0px -32px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ── Progress bar animate on scroll
+const progressObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.getElementById('progress-fill').style.width = '31.2%';
+    }
+  });
+}, { threshold: 0.3 });
+const fill = document.getElementById('progress-fill');
+if (fill) { fill.style.width = '0%'; progressObs.observe(fill.parentElement); }
+
+// ── Reserve form
+function handleReserve(e) {
+  e.preventDefault();
+  const email = document.getElementById('reserve-email').value;
+  document.getElementById('reserve-email').value = '';
+  const note = document.getElementById('reserve-note');
+  note.innerHTML = '✓ You\'re reserved. We\'ll reach out before NYC launch. <span>Founder pricing locked.</span>';
+  note.style.color = 'var(--amber)';
+}
+</script>
+</body>
+</html>
